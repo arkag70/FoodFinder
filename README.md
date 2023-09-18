@@ -12,4 +12,7 @@ To run
   a sense of direction to move closer to food
 * The main goal is to use the previous data to train them to find food
 
+Video : (background music - Pokemon Ruby Littleroot town)
+
+https://github.com/arkag70/FoodFinder/assets/43979789/66d345ac-46fd-41f4-b5c1-f2700b5b817c
 
