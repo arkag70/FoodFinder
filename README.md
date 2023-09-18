@@ -1,5 +1,5 @@
-# Freeloaders
-Freeloaders floating in pygame canvas, learning to find food
+# Foodfinders
+Foodfinders floating in pygame canvas, learning to find food
 To run 
 > pip install -r requirements.txt
 

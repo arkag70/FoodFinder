@@ -1,6 +1,6 @@
 import sys
 from random import choice
-from freeloader import Freeloader, pygame
+from foodfinder import Foodfinder, pygame
 import threading
 from settings import *
 from food import Food
@@ -18,28 +18,36 @@ def play_music():
     pygame.mixer.music.set_volume(VOLUME)  # Adjust the volume as needed
     pygame.mixer.music.play(-1)  # -1 indicates infinite loop
 
-def createFreeloaders(matingPool, screen):
+def createFoodfinders(matingPool, screen):
 
-    freeloaders = []
-    for _ in range(FREELOADERS):
+    foodfinders = []
+    for _ in range(FOODFINDERS):
         xvelarr = []
         yvelarr = []
         
         if(len(matingPool.dnaPool) == 0):
+            # generate random dna (velocity)
             for _ in range(VELOCITY_VECTOR_SIZE):
-                xvelarr.append(choice(getRange(xveclParams)))
-                yvelarr.append(choice(getRange(yveclParams)))
+                xvelarr.append(choice(getRange(XVECLPARAMS)))
+                yvelarr.append(choice(getRange(YVECLPARAMS)))
         else:
-            selectedDNA = matingPool.selection()
+            # select dna from matingPool
+            parentA = matingPool.selection()
+            parentB = matingPool.selection()
+
+            #crossover between two parents
+            selectedDNA = MatingPool.crossover(parentA, parentB, CROSSOVERRATE)
+            #mutation on the selected DNA
+            selectedDNA = MatingPool.mutation(selectedDNA, MUTATIONRATE)
             for _ in range(VELOCITY_VECTOR_SIZE):
                 xvelarr.append(choice(selectedDNA[X_INDEX]))
                 yvelarr.append(choice(selectedDNA[Y_INDEX]))
 
-        freeloaders.append(Freeloader(length, breadth, 
-            choice(getRange(xposParams)) ,choice(getRange(yposParams)), 
+        foodfinders.append(Foodfinder(LENGTH, BREADTH, 
+            choice(getRange(XPOSPARAMS)) ,choice(getRange(YPOSPARAMS)), 
             xvelarr, yvelarr, 
-            choice(getRange(accParams)), choice(getRange(accParams)), screen))
-    return freeloaders
+            choice(getRange(ACCPARAMS)), choice(getRange(ACCPARAMS)), screen))
+    return foodfinders
 
 def createFood(screen):
     return Food(FOODLEN, FOODWID, FOODX, FOODY, screen)
@@ -53,7 +61,7 @@ if __name__ == "__main__":
     music_thread.start()
 
     # Create a Pygame window
-    screen = pygame.display.set_mode((width, height))
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     font = pygame.font.Font(None, 24)
     # Set the window title
     pygame.display.set_caption("Pygame Canvas")
@@ -65,69 +73,72 @@ if __name__ == "__main__":
     bestFitnessList = []
     avgFitnessList = []
     # Main game loop
+    minimumDistance = 2*HEIGHT + 2*WIDTH
     while generation < GENERATION:
 
         iteration = 0
         generation +=1
-        freeloaders = createFreeloaders(matingPool, screen)
+        foodfinders = createFoodfinders(matingPool, screen)
         food = createFood(screen)
         matingPool.reset()
+        bestFitnessList.append(maxFitness)
+        avgFitnessList.append(avgFitness)
 
         while iteration < LIFESPAN:
             iteration+=1
             # Clear the screen with a white background
-            screen.fill(black)
+            screen.fill(BLACK)
 
-            display_text(f"Iteration : {iteration}/{LIFESPAN}", 10, 10, white, font, screen)
-            display_text(f"Generation: {generation}/{GENERATION}", 10, 30, white, font, screen)
-            display_text(f"Higest Fitness : {round(maxFitness*100,2)} %", 10, 50, white, font, screen)
-            display_text(f"Average Fitness : {round(avgFitness*100,2)} %", 10, 70, white, font, screen)
-            
-            bestFitnessList.append(maxFitness)
-            avgFitnessList.append(avgFitness)
+            display_text(f"Iteration : {iteration}/{LIFESPAN}", 10, 10, WHITE, font, screen)
+            display_text(f"Generation: {generation}/{GENERATION}", 10, 30, WHITE, font, screen)
+            display_text(f"Higest Fitness : {round(maxFitness*100,2)} %", 10, 50, WHITE, font, screen)
+            display_text(f"Average Fitness : {round(avgFitness*100,2)} %", 10, 70, WHITE, font, screen)
+            if iteration > 1:
+                display_text(f"Closest foodfinder: {int(minimumDistance)} px", 10, 90, WHITE, font, screen)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
-            for i, freeloader in enumerate(freeloaders):
+            for i, foodfinder in enumerate(foodfinders):
                 # Draw on the canvas (for example, a red rectangle)
                 try:
-                    freeloader.draw()
+                    foodfinder.draw()
                     food.draw()
                 except:
-                    print(f"Exception freeloader: {(freeloader.red, freeloader.green, freeloader.blue)}")
+                    print(f"Exception foodfinder: {(foodfinder.red, foodfinder.green, foodfinder.blue)}")
                     print(f"Exception food : {(food.color)}")
 
-                freeloader.move()
+                foodfinder.move()
           
-            pygame.time.delay(delay)
+            pygame.time.delay(DELAY)
             # Update the display
             pygame.display.update()
         '''
-            for every freeloader, calculate fitness, which is their distance
+            for every foodfinder, calculate fitness, which is their distance
             from food at the last iteration, and find the max fitness to normalize it
         '''
         # find raw fitness as an inverse relation to distance from food
-        for freeloader in freeloaders:
-            freeloader.calculateFitness((FOODX, FOODY))
-            # print(f"Fitness : {freeloader.fitness}")
+        for foodfinder in foodfinders:
+            minimumDistance = min(foodfinder.calculateFitness((FOODX, FOODY)), minimumDistance)
+            
+            # print(f"Fitness : {foodfinder.fitness}")
 
         # find max fitness for this generation and compare with the all time maxFitness
-        maxFitnessFreeloader = max(freeloaders, key=(lambda freeloader : freeloader.fitness))
+        maxFitnessFreeloader = max(foodfinders, key=(lambda foodfinder : foodfinder.fitness))
         maxFitness = max(maxFitnessFreeloader.fitness, maxFitness)
 
-        avgFitness = sum(freeloader.fitness for freeloader in freeloaders)/len(freeloaders)
+        avgFitness = sum(foodfinder.fitness for foodfinder in foodfinders)/len(foodfinders)
 
         # normalize fitness
-        for freeloader in freeloaders:
-            freeloader.fitness = freeloader.fitness / maxFitness
-            matingPool.addFitness((freeloader.xvel, freeloader.yvel), freeloader.fitness)
+        for foodfinder in foodfinders:
+            foodfinder.fitness = foodfinder.fitness / maxFitness
+            matingPool.addFitness((foodfinder.xvel, foodfinder.yvel), foodfinder.fitness)
 
         print(f'''Generation: {generation}/{GENERATION}\tIteration : {iteration}/{LIFESPAN}\tBest Fitness : {maxFitness}\tAverage Fitness : {avgFitness}''')
 
-    plotChart(bestFitnessList, "Generation", "Fitness", "Fitness Chart", "green", (1,1,1))
-    plotChart(avgFitnessList, "Generation", "Fitness", "Fitness Chart", "blue", (1,1,1))
+    plotChart(bestFitnessList, "Generation", "Fitness", "Fitness Chart", "green", "best fitness", (1,1,1))
+    plotChart(avgFitnessList, "Generation", "Fitness", "Fitness Chart", "blue", "average fitness", (1,1,1))
     viewChart()
 
     # Quit Pygame

@@ -1,42 +1,42 @@
 import numpy as np
+from random import randint
 # Define the screen dimensions
+
+X_INDEX = 0
+Y_INDEX = 1
+VELOCITY_VECTOR_SIZE = 6
+WIDTH = 800
+HEIGHT = 600
+LENGTH = 20
+BREADTH = 5
+ACCPARAMS = (-0.01, 0.01, 0.0001)
+XVECLPARAMS = (-1, 1, 0.01)
+YVECLPARAMS = (-1, 1, 0.01)
+XPOSPARAMS = ((WIDTH/2)-1, WIDTH/2, 1)
+YPOSPARAMS = (HEIGHT-1, HEIGHT, 1)
+FOODFINDERS = 50
+LIFESPAN = 100
+GENERATION = 5
+CROSSOVERRATE = 0.05
+MUTATIONRATE = 0.01
+DAMP = 0.8
+DELAY = 30
+FOODLEN = 20
+FOODWID = 20
+FOODX = randint(FOODLEN, WIDTH - FOODLEN)
+FOODY = randint(FOODLEN, HEIGHT/2 - FOODLEN)
+MUSICFILE = "music/theme.mp3"
+VOLUME = 0.05
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+foodfinders = []
+objects = []
+iteration = 0
+averageAgeList = []
+populationSizeList = []
 
 def getRange(params):
     start, stop, step = params
     return np.arange(start, stop, step, dtype=float)
-X_INDEX = 0
-Y_INDEX = 1
-VELOCITY_VECTOR_SIZE = 6
-width = 800
-height = 600
-length = 20
-breadth = 5
-
-accParams = (-0.01, 0.01, 0.0001)
-xveclParams = (-1, 1, 0.01)
-yveclParams = (-1, 1, 0.01)
-xposParams = ((width/2)-1, width/2, 1)
-yposParams = (height-1, height, 1)
-FREELOADERS = 20
-LIFESPAN = 100
-GENERATION = 50
-MIN_POPULATION_SIZE = 0.05 * FREELOADERS
-damp = 0.8
-freeloaders = []
-objects = []
-iteration = 0
-delay = 30
-averageAgeList = []
-populationSizeList = []
-
-# Define colors
-white = (255, 255, 255)
-black = (0, 0, 0)
-
-FOODX = width/2
-FOODY = height/10
-FOODLEN = 20
-FOODWID = 20
-
-MUSICFILE = "music/theme.mp3"
-VOLUME = 0.05

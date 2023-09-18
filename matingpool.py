@@ -1,4 +1,5 @@
-from random import choice
+from random import choice, random
+from numpy import concatenate
 
 class MatingPool:
 
@@ -20,6 +21,27 @@ class MatingPool:
     
     def selection(self):
         return choice(self.dnaPool)
+    
+    @staticmethod
+    def crossover(dnaA, dnaB, crossoverRate):
+        xParamsA, yParamsA = dnaA
+        xParamsB, yParamsB = dnaB
 
+        if random() < crossoverRate:
+            childXDna = concatenate((xParamsA[:int(len(xParamsA)/2)], xParamsB[int(len(xParamsB)/2): len(xParamsB)]))
+            childYDna = concatenate((yParamsA[:int(len(yParamsA)/2)], yParamsB[int(len(yParamsB)/2): len(yParamsB)]))
+            return (childXDna, childYDna)
+        
+        return (xParamsA, yParamsA)
+    
+    @staticmethod
+    def mutation(dna, mutationRate):
+
+        xParams, yParams = dna
+        if random() < mutationRate:
+            xParams = [(val+ 2*random() - 1) for val in xParams]
+            yParams = [(val+ 2*random() - 1) for val in yParams]
+        return (xParams, yParams)
+    
     def reset(self):
         self.dnaPool = list(tuple())
