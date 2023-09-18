@@ -34,7 +34,7 @@ class Freeloader:
     def calculateFitness(self, target):
         targetx, targety = target
         distance = sqrt((targetx - self.xpos)**2 + (targety - self.ypos)**2)
-        self.fitness = 1/(distance) # in case distance is 0
+        self.fitness = 1/(1+distance) # in case distance is 0
 
     # def boundaryCheck(self, canvaswidth, canvasheight, damp):
     #     if(self.rect.x < 0 or self.rect.x > (canvaswidth - self.breadth)):

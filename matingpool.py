@@ -1,3 +1,4 @@
+from random import choice
 
 class MatingPool:
 
@@ -16,6 +17,9 @@ class MatingPool:
         N = int(fitness*100)
         for _ in range(N):
             self.dnaPool.append(dna)
+    
+    def selection(self):
+        return choice(self.dnaPool)
 
     def reset(self):
         self.dnaPool = list(tuple())

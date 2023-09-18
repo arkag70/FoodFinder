@@ -8,18 +8,26 @@ from matingpool import MatingPool
 
 def play_music():
     pygame.mixer.init()
-    pygame.mixer.music.load("music/theme.mp3")  # Replace with your music file
-    pygame.mixer.music.set_volume(0.05)  # Adjust the volume as needed
+    pygame.mixer.music.load(MUSICFILE)  # Replace with your music file
+    pygame.mixer.music.set_volume(VOLUME)  # Adjust the volume as needed
     pygame.mixer.music.play(-1)  # -1 indicates infinite loop
 
-def createFreeloaders():
+def createFreeloaders(matingPool):
+
     freeloaders = []
     for _ in range(FREELOADERS):
         xvelarr = []
         yvelarr = []
-        for _ in range(6):
-            xvelarr.append(choice(getRange(veclParams)))
-            yvelarr.append(choice(getRange(veclParams)))
+        
+        if(len(matingPool.dnaPool) == 0):
+            for _ in range(VELOCITY_VECTOR_SIZE):
+                xvelarr.append(choice(getRange(veclParams)))
+                yvelarr.append(choice(getRange(veclParams)))
+        else:
+            selectedDNA = matingPool.selection()
+            for _ in range(VELOCITY_VECTOR_SIZE):
+                xvelarr.append(choice(selectedDNA[X_INDEX]))
+                yvelarr.append(choice(selectedDNA[Y_INDEX]))
 
         freeloaders.append(Freeloader(length, breadth, 
             choice(getRange(xposParams)) ,choice(getRange(yposParams)), 
@@ -51,7 +59,7 @@ if __name__ == "__main__":
 
         iteration = 0
         generation +=1
-        freeloaders = createFreeloaders()
+        freeloaders = createFreeloaders(matingPool)
         food = createFood()
         matingPool.reset()
 
@@ -96,7 +104,6 @@ if __name__ == "__main__":
         for freeloader in freeloaders:
             freeloader.fitness = freeloader.fitness / maxFitness
             matingPool.addFitness((freeloader.xvel, freeloader.yvel), freeloader.fitness)
-        break
 
     # Quit Pygame
     pygame.quit()

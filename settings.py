@@ -4,7 +4,9 @@ import numpy as np
 def getRange(params):
     start, stop, step = params
     return np.arange(start, stop, step, dtype=float)
-
+X_INDEX = 0
+Y_INDEX = 1
+VELOCITY_VECTOR_SIZE = 6
 width = 800
 height = 600
 length = 20
@@ -15,8 +17,8 @@ veclParams = (-0.02, 1, 0.01)
 xposParams = (width/3, 2*width/3, 10)
 yposParams = (3*height/4, height, 10)
 FREELOADERS = 20
-LIFESPAN = 100
-GENERATION = 10
+LIFESPAN = 150
+GENERATION = 50
 MIN_POPULATION_SIZE = 0.05 * FREELOADERS
 damp = 0.8
 freeloaders = []
@@ -34,3 +36,6 @@ FOODX = width/2
 FOODY = height/10
 FOODLEN = 20
 FOODWID = 20
+
+MUSICFILE = "music/theme.mp3"
+VOLUME = 0.05
