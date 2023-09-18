@@ -30,8 +30,8 @@ class Foodfinder:
         self.xvel += self.xacc
         self.yvel += self.yacc
 
-    def calculateFitness(self, target):
+    def calculateFitness(self, target, initialDistance):
         targetx, targety = target
         distance = sqrt((targetx - self.rect.x)**2 + (targety - self.rect.y)**2)
-        self.fitness = 1 if distance==0 else 1/(distance)
+        self.fitness = (initialDistance - distance)/initialDistance
         return distance

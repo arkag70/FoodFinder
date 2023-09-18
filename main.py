@@ -1,6 +1,6 @@
 import sys
 from random import choice
-from foodfinder import Foodfinder, pygame
+from foodfinder import Foodfinder, pygame, sqrt
 import threading
 from settings import *
 from food import Food
@@ -72,6 +72,7 @@ if __name__ == "__main__":
     matingPool = MatingPool()
     bestFitnessList = []
     avgFitnessList = []
+    initialDistance = sqrt((WIDTH/2 - FOODX)**2 + (HEIGHT - FOODY)**2)
     # Main game loop
     minimumDistance = 2*HEIGHT + 2*WIDTH
     while generation < GENERATION:
@@ -120,7 +121,7 @@ if __name__ == "__main__":
         '''
         # find raw fitness as an inverse relation to distance from food
         for foodfinder in foodfinders:
-            minimumDistance = min(foodfinder.calculateFitness((FOODX, FOODY)), minimumDistance)
+            minimumDistance = min(foodfinder.calculateFitness((FOODX, FOODY), initialDistance), minimumDistance)
             
             # print(f"Fitness : {foodfinder.fitness}")
 
@@ -134,8 +135,6 @@ if __name__ == "__main__":
         for foodfinder in foodfinders:
             foodfinder.fitness = foodfinder.fitness / maxFitness
             matingPool.addFitness((foodfinder.xvel, foodfinder.yvel), foodfinder.fitness)
-
-        print(f'''Generation: {generation}/{GENERATION}\tIteration : {iteration}/{LIFESPAN}\tBest Fitness : {maxFitness}\tAverage Fitness : {avgFitness}''')
 
     plotChart(bestFitnessList, "Generation", "Fitness", "Fitness Chart", "green", "best fitness", (1,1,1))
     plotChart(avgFitnessList, "Generation", "Fitness", "Fitness Chart", "blue", "average fitness", (1,1,1))
