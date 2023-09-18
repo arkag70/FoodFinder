@@ -3,12 +3,10 @@ from math import sqrt
 from random import choice
 class Freeloader:
 
-    def __init__(self, l, b, x, y, vxarr, vyarr, ax, ay) -> None:
+    def __init__(self, l, b, x, y, vxarr, vyarr, ax, ay, screen) -> None:
         
         self.length = l
         self.breadth = b
-        self.xpos = x
-        self.ypos = y
         self.xvel = vxarr
         self.yvel = vyarr
         self.xacc = ax
@@ -19,9 +17,10 @@ class Freeloader:
         self.color = (self.red, self.green, self.blue)
         self.rect = pygame.Rect(x, y, b, l)
         self.fitness = 0
+        self.screen = screen
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+    def draw(self):
+        pygame.draw.rect(self.screen, self.color, self.rect)
 
     def move(self):
 
@@ -33,8 +32,8 @@ class Freeloader:
 
     def calculateFitness(self, target):
         targetx, targety = target
-        distance = sqrt((targetx - self.xpos)**2 + (targety - self.ypos)**2)
-        self.fitness = 1/(1+distance) # in case distance is 0
+        distance = sqrt((targetx - self.rect.x)**2 + (targety - self.rect.y)**2)
+        self.fitness = 1/sqrt(1+distance) # in case distance is 0
 
     # def boundaryCheck(self, canvaswidth, canvasheight, damp):
     #     if(self.rect.x < 0 or self.rect.x > (canvaswidth - self.breadth)):

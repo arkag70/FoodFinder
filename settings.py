@@ -13,11 +13,12 @@ length = 20
 breadth = 5
 
 accParams = (-0.01, 0.01, 0.0001)
-veclParams = (-0.02, 1, 0.01)
-xposParams = (width/3, 2*width/3, 10)
-yposParams = (3*height/4, height, 10)
+xveclParams = (-1, 1, 0.01)
+yveclParams = (-1, 1, 0.01)
+xposParams = ((width/2)-1, width/2, 1)
+yposParams = (height-1, height, 1)
 FREELOADERS = 20
-LIFESPAN = 150
+LIFESPAN = 100
 GENERATION = 50
 MIN_POPULATION_SIZE = 0.05 * FREELOADERS
 damp = 0.8
