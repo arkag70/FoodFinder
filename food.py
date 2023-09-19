@@ -1,5 +1,5 @@
 import pygame
-from settings import FOODLEN, FOODWID, FOODX, FOODY
+from settings import FOODLEN, FOODWID, FOODX, FOODY, ALPHA
 
 class Food:
 
@@ -9,7 +9,7 @@ class Food:
         self.xpos = x
         self.ypos = y
         self.rect = pygame.Rect(x,y,b,l)
-        self.color = (255, 0, 0)
+        self.color = (255, 0, 0, ALPHA)
         self.screen = screen
 
     def draw(self):

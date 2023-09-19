@@ -2,10 +2,11 @@ import sys
 import pygame
 from math import sqrt
 from foodfinder import Foodfinder
+from food import Food
+from obstacle import Obstacle
 from utils import *
 from time import sleep
 from settings import *
-from food import Food
 from matingpool import MatingPool
 from chart import plotChart, viewChart
 
@@ -34,6 +35,7 @@ if __name__ == "__main__":
         avgFitness = 0
         foodfinders = Foodfinder.createFoodfinders(matingPool, screen)
         food = Food.createFood(screen)
+        obstacle = Obstacle.createObstacle(screen)
         matingPool.reset()
 
         while iteration < LIFESPAN:
@@ -57,11 +59,13 @@ if __name__ == "__main__":
                 try:
                     foodfinder.draw()
                     food.draw()
+                    obstacle.draw()
+                    foodfinder.checkCollision(obstacle)
                 except:
                     print(f"Exception foodfinder: {(foodfinder.red, foodfinder.green, foodfinder.blue)}")
                     print(f"Exception food : {(food.color)}")
 
-                if not foodfinder.completed:
+                if not foodfinder.completed and not foodfinder.crashed:
                     foodfinder.move()
             '''
                 for every foodfinder, calculate fitness, which is their distance

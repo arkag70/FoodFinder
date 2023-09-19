@@ -22,6 +22,7 @@ class Foodfinder:
         self.fitness = 0
         self.screen = screen
         self.completed = False
+        self.crashed = False
 
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
@@ -45,6 +46,11 @@ class Foodfinder:
             self.color = target.color
         
         return distance
+    
+    def checkCollision(self, obstacle):
+        
+        if (self.rect.x  >= obstacle.xpos and self.rect.x <= obstacle.xpos + obstacle.width) and (self.rect.y  >= obstacle.ypos and self.rect.y <= obstacle.ypos + obstacle.height):
+            self.crashed = True
 
     @staticmethod
     def createFoodfinders(matingPool, screen):

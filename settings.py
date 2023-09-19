@@ -25,6 +25,11 @@ FOODLEN = 20
 FOODWID = 20
 FOODX = randint(FOODLEN, WIDTH - FOODLEN)
 FOODY = randint(FOODLEN, HEIGHT/2 - FOODLEN)
+ALPHA = 11
+OBS_X = 100
+OBS_Y = 400
+OBS_W = 600
+OBS_H = 20
 MUSICFILE = "music/theme.mp3"
 VOLUME = 0.05
 # Define colors
