@@ -1,5 +1,6 @@
 from random import choice, random
 from numpy import concatenate
+from settings import FITNESSBONUS
 
 class MatingPool:
 
@@ -15,7 +16,8 @@ class MatingPool:
             fitness so that they've high 
             probalibity of getting picked
         '''
-        N = int(fitness*100)
+        fitness = fitness * FITNESSBONUS if fitness == 1 else fitness
+        N = int(fitness * 100)
         for _ in range(N):
             self.dnaPool.append(dna)
     

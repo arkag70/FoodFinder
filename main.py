@@ -110,7 +110,25 @@ if __name__ == "__main__":
                     print(f"Exception foodfinder: {(foodfinder.red, foodfinder.green, foodfinder.blue)}")
                     print(f"Exception food : {(food.color)}")
 
-                foodfinder.move()
+                if not foodfinder.completed:
+                    foodfinder.move()
+            
+            # find raw fitness as an inverse relation to distance from food
+            for foodfinder in foodfinders:
+                minimumDistance = min(foodfinder.calculateFitness(food, initialDistance), minimumDistance)
+                
+                # print(f"Fitness : {foodfinder.fitness}")
+
+            # find max fitness for this generation and compare with the all time maxFitness
+            maxFitnessFoodfinder = max(foodfinders, key=(lambda foodfinder : foodfinder.fitness))
+            maxFitness = max(maxFitnessFoodfinder.fitness, maxFitness)
+
+            avgFitness = sum(foodfinder.fitness for foodfinder in foodfinders)/len(foodfinders)
+
+            # normalize fitness
+            for foodfinder in foodfinders:
+                foodfinder.fitness = foodfinder.fitness / maxFitness
+                matingPool.addFitness((foodfinder.xvel, foodfinder.yvel), foodfinder.fitness)
           
             pygame.time.delay(DELAY)
             # Update the display
@@ -119,22 +137,6 @@ if __name__ == "__main__":
             for every foodfinder, calculate fitness, which is their distance
             from food at the last iteration, and find the max fitness to normalize it
         '''
-        # find raw fitness as an inverse relation to distance from food
-        for foodfinder in foodfinders:
-            minimumDistance = min(foodfinder.calculateFitness((FOODX, FOODY), initialDistance), minimumDistance)
-            
-            # print(f"Fitness : {foodfinder.fitness}")
-
-        # find max fitness for this generation and compare with the all time maxFitness
-        maxFitnessFreeloader = max(foodfinders, key=(lambda foodfinder : foodfinder.fitness))
-        maxFitness = max(maxFitnessFreeloader.fitness, maxFitness)
-
-        avgFitness = sum(foodfinder.fitness for foodfinder in foodfinders)/len(foodfinders)
-
-        # normalize fitness
-        for foodfinder in foodfinders:
-            foodfinder.fitness = foodfinder.fitness / maxFitness
-            matingPool.addFitness((foodfinder.xvel, foodfinder.yvel), foodfinder.fitness)
 
     plotChart(bestFitnessList, "Generation", "Fitness", "Fitness Chart", "green", "best fitness", (1,1,1))
     plotChart(avgFitnessList, "Generation", "Fitness", "Fitness Chart", "blue", "average fitness", (1,1,1))

@@ -1,6 +1,7 @@
 import pygame
 from math import sqrt
 from random import choice
+
 class Foodfinder:
 
     def __init__(self, l, b, x, y, vxarr, vyarr, ax, ay, screen) -> None:
@@ -18,6 +19,7 @@ class Foodfinder:
         self.rect = pygame.Rect(x, y, b, l)
         self.fitness = 0
         self.screen = screen
+        self.completed = False
 
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
@@ -31,7 +33,12 @@ class Foodfinder:
         self.yvel += self.yacc
 
     def calculateFitness(self, target, initialDistance):
-        targetx, targety = target
+
+        targetx, targety, targetLen = target.xpos, target.ypos, target.length
         distance = sqrt((targetx - self.rect.x)**2 + (targety - self.rect.y)**2)
-        self.fitness = (initialDistance - distance)/initialDistance
+        self.fitness = 1 if (distance < targetLen) else (initialDistance - distance)/initialDistance
+        
+        if self.fitness == 1:
+            self.completed = True
+        
         return distance
