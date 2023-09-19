@@ -42,6 +42,7 @@ class Foodfinder:
         
         if self.fitness == 1:
             self.completed = True
+            self.color = target.color
         
         return distance
 
