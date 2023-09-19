@@ -30,6 +30,7 @@ VOLUME = 0.05
 # Define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+PAUSE = 0.3
 
 foodfinders = []
 objects = []

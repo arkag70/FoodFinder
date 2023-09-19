@@ -1,4 +1,5 @@
 import pygame
+from settings import FOODLEN, FOODWID, FOODX, FOODY
 
 class Food:
 
@@ -13,3 +14,7 @@ class Food:
 
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
+
+    @staticmethod
+    def createFood(screen):
+        return Food(FOODLEN, FOODWID, FOODX, FOODY, screen)

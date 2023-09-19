@@ -1,4 +1,6 @@
 import pygame
+from settings import *
+from matingpool import MatingPool
 from math import sqrt
 from random import choice
 
@@ -42,3 +44,35 @@ class Foodfinder:
             self.completed = True
         
         return distance
+
+    @staticmethod
+    def createFoodfinders(matingPool, screen):
+
+        foodfinders = []
+        for _ in range(FOODFINDERS):
+            xvelarr = []
+            yvelarr = []
+            
+            if(len(matingPool.dnaPool) == 0):
+                # generate random dna (velocity)
+                for _ in range(VELOCITY_VECTOR_SIZE):
+                    xvelarr.append(choice(getRange(XVECLPARAMS)))
+                    yvelarr.append(choice(getRange(YVECLPARAMS)))
+            else:
+                # select dna from matingPool
+                parentA = matingPool.selection()
+                parentB = matingPool.selection()
+
+                #crossover between two parents
+                selectedDNA = MatingPool.crossover(parentA, parentB, CROSSOVERRATE)
+                #mutation on the selected DNA
+                selectedDNA = MatingPool.mutation(selectedDNA, MUTATIONRATE)
+                for _ in range(VELOCITY_VECTOR_SIZE):
+                    xvelarr.append(choice(selectedDNA[X_INDEX]))
+                    yvelarr.append(choice(selectedDNA[Y_INDEX]))
+
+            foodfinders.append(Foodfinder(LENGTH, BREADTH, 
+                XPOSPARAMS ,YPOSPARAMS, 
+                xvelarr, yvelarr, 
+                choice(getRange(ACCPARAMS)), choice(getRange(ACCPARAMS)), screen))
+        return foodfinders
