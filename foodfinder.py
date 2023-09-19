@@ -36,7 +36,7 @@ class Foodfinder:
 
         targetx, targety, targetLen = target.xpos, target.ypos, target.length
         distance = sqrt((targetx - self.rect.x)**2 + (targety - self.rect.y)**2)
-        self.fitness = 1 if (distance < targetLen) else (initialDistance - distance)/initialDistance
+        self.fitness = 1 if (distance < targetLen) else (1/distance)
         
         if self.fitness == 1:
             self.completed = True

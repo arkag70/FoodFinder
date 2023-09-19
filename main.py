@@ -44,7 +44,7 @@ def createFoodfinders(matingPool, screen):
                 yvelarr.append(choice(selectedDNA[Y_INDEX]))
 
         foodfinders.append(Foodfinder(LENGTH, BREADTH, 
-            choice(getRange(XPOSPARAMS)) ,choice(getRange(YPOSPARAMS)), 
+            XPOSPARAMS ,YPOSPARAMS, 
             xvelarr, yvelarr, 
             choice(getRange(ACCPARAMS)), choice(getRange(ACCPARAMS)), screen))
     return foodfinders
@@ -67,23 +67,25 @@ if __name__ == "__main__":
     pygame.display.set_caption("Pygame Canvas")
 
     generation = 0
-    maxFitness = 0
-    avgFitness = 0
+    maxBestFitness = 0
+    maxAvgFitness = 0
+    maxAvgFitnessGen = 0
     matingPool = MatingPool()
     bestFitnessList = []
     avgFitnessList = []
     initialDistance = sqrt((WIDTH/2 - FOODX)**2 + (HEIGHT - FOODY)**2)
     # Main game loop
-    minimumDistance = 2*HEIGHT + 2*WIDTH
+    minimumDistance = 1000
+
     while generation < GENERATION:
 
         iteration = 0
         generation +=1
+        bestFitness = 0
+        avgFitness = 0
         foodfinders = createFoodfinders(matingPool, screen)
         food = createFood(screen)
         matingPool.reset()
-        bestFitnessList.append(maxFitness)
-        avgFitnessList.append(avgFitness)
 
         while iteration < LIFESPAN:
             iteration+=1
@@ -92,10 +94,10 @@ if __name__ == "__main__":
 
             display_text(f"Iteration : {iteration}/{LIFESPAN}", 10, 10, WHITE, font, screen)
             display_text(f"Generation: {generation}/{GENERATION}", 10, 30, WHITE, font, screen)
-            display_text(f"Higest Fitness : {round(maxFitness*100,2)} %", 10, 50, WHITE, font, screen)
+            display_text(f"Higest Fitness : {round(bestFitness*100,2)} %", 10, 50, WHITE, font, screen)
             display_text(f"Average Fitness : {round(avgFitness*100,2)} %", 10, 70, WHITE, font, screen)
-            if iteration > 1:
-                display_text(f"Closest foodfinder: {int(minimumDistance)} px", 10, 90, WHITE, font, screen)
+            display_text(f"Best Average Fitness : {round(maxAvgFitness*100,2)} %", 10, 90, WHITE, font, screen)
+            display_text(f"Fittest Generation : {maxAvgFitnessGen}", 10, 110, WHITE, font, screen)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -116,18 +118,16 @@ if __name__ == "__main__":
             # find raw fitness as an inverse relation to distance from food
             for foodfinder in foodfinders:
                 minimumDistance = min(foodfinder.calculateFitness(food, initialDistance), minimumDistance)
-                
-                # print(f"Fitness : {foodfinder.fitness}")
 
-            # find max fitness for this generation and compare with the all time maxFitness
+            # find max fitness for this generation and compare with the all time bestFitness
             maxFitnessFoodfinder = max(foodfinders, key=(lambda foodfinder : foodfinder.fitness))
-            maxFitness = max(maxFitnessFoodfinder.fitness, maxFitness)
+            bestFitness = max(maxFitnessFoodfinder.fitness, bestFitness)
 
             avgFitness = sum(foodfinder.fitness for foodfinder in foodfinders)/len(foodfinders)
 
             # normalize fitness
             for foodfinder in foodfinders:
-                foodfinder.fitness = foodfinder.fitness / maxFitness
+                foodfinder.fitness = (foodfinder.fitness / maxBestFitness) if maxBestFitness != 0 else (foodfinder.fitness / bestFitness)
                 matingPool.addFitness((foodfinder.xvel, foodfinder.yvel), foodfinder.fitness)
           
             pygame.time.delay(DELAY)
@@ -137,6 +137,13 @@ if __name__ == "__main__":
             for every foodfinder, calculate fitness, which is their distance
             from food at the last iteration, and find the max fitness to normalize it
         '''
+        maxBestFitness = max(maxBestFitness, bestFitness)
+        if maxAvgFitness < avgFitness:
+            maxAvgFitness = avgFitness
+            maxAvgFitnessGen = generation
+
+        bestFitnessList.append(bestFitness)
+        avgFitnessList.append(avgFitness)
 
     plotChart(bestFitnessList, "Generation", "Fitness", "Fitness Chart", "green", "best fitness", (1,1,1))
     plotChart(avgFitnessList, "Generation", "Fitness", "Fitness Chart", "blue", "average fitness", (1,1,1))
