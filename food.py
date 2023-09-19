@@ -4,8 +4,8 @@ from settings import FOODLEN, FOODWID, FOODX, FOODY, ALPHA
 class Food:
 
     def __init__(self, l, b, x, y, screen):
-        self.length = l
-        self.breadth = b
+        self.height = l
+        self.width = b
         self.xpos = x
         self.ypos = y
         self.rect = pygame.Rect(x,y,b,l)

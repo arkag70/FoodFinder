@@ -3,6 +3,7 @@ from settings import *
 from matingpool import MatingPool
 from math import sqrt
 from random import choice
+CRASHWEIGHT = 5
 
 class Foodfinder:
 
@@ -19,7 +20,7 @@ class Foodfinder:
         self.blue = 255
         self.color = (self.red, self.green, self.blue)
         self.rect = pygame.Rect(x, y, b, l)
-        self.fitness = 0
+        self.fitness = 1
         self.screen = screen
         self.completed = False
         self.crashed = False
@@ -37,24 +38,37 @@ class Foodfinder:
 
     def calculateFitness(self, target):
 
+        targetx, targety = target.xpos, target.ypos
+        distance = sqrt((targetx - self.rect.x)**2 + (targety - self.rect.y)**2)
+        initialDistance = sqrt((targetx - XPOSPARAMS)**2 + (targety - YPOSPARAMS)**2)
+        relative = initialDistance - distance
+        self.fitness = relative/initialDistance if relative >= 0 else 0
+
+        if distance < target.width:
+            self.completed = True
+            self.color = target.color
+
         if self.crashed == True:
-            self.fitness *= 0.1
-        else:
-            targetx, targety, targetLen = target.xpos, target.ypos, target.length
-            distance = sqrt((targetx - self.rect.x)**2 + (targety - self.rect.y)**2)
-            self.fitness = 1 if (distance < targetLen) else (1/distance)
-            
-            if self.fitness == 1:
-                self.completed = True
-                self.color = target.color
+            self.fitness /= CRASHWEIGHT
     
     def checkCollision(self, obstacle):
-        #with obstacle
-        if (self.rect.x  >= obstacle.xpos and self.rect.x <= obstacle.xpos + obstacle.width) and (self.rect.y  >= obstacle.ypos and self.rect.y <= obstacle.ypos + obstacle.height):
+        # with obstacle
+        if (self.rect.x  >= obstacle.xpos and self.rect.x <= obstacle.xpos + obstacle.width) and (self.rect.y  >= obstacle.ypos - self.length and self.rect.y <= obstacle.ypos + obstacle.height):
             self.crashed = True
-        #with walls
-        if (self.rect.x  <= self.breadth or self.rect.x >= self.screen.get_width()-self.breadth or self.rect.y  <= self.length):
-            self.crashed = True
+        # with left right walls
+        if (self.rect.x  <= 0 or self.rect.x >= self.screen.get_width()-self.breadth ):
+            self.xrev(DAMP)
+        # top bottom walls
+        if (self.rect.y <= 0 or self.rect.y >= self.screen.get_height() - self.length):
+            self.yrev(DAMP)
+
+    def xrev(self, damp):
+        self.xvel = [-1 * xvel for xvel in self.xvel]
+        self.xacc *= damp
+    
+    def yrev(self, damp):
+        self.yvel = [-1 * yvel for yvel in self.yvel]
+        self.yacc *= damp
 
     @staticmethod
     def createFoodfinders(matingPool, screen):

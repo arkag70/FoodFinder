@@ -7,7 +7,7 @@ class MatingPool:
     def __init__(self):
         self.dnaPool = list(tuple())
 
-    def addFitness(self, dna, fitness):
+    def addFitness(self, dna, fitness, gen):
         ''' 
             0 < fitness < 1,
             mutiply by 100 and round off,
@@ -16,8 +16,8 @@ class MatingPool:
             fitness so that they've high 
             probalibity of getting picked
         '''
-        fitness = fitness * FITNESSBONUS if fitness == 1 else fitness
-        N = int(fitness * 100)
+        FITNESSBONUS = 1 if ((fitness < 1) or (gen == 1)) else 10
+        N = int(fitness * FITNESSBONUS * 100)
         for _ in range(N):
             self.dnaPool.append(dna)
     
