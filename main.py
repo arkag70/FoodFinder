@@ -24,7 +24,6 @@ if __name__ == "__main__":
     bestFitnessList = []
     avgFitnessList = []
     initialDistance = sqrt((WIDTH/2 - FOODX)**2 + (HEIGHT - FOODY)**2)
-    minimumDistance = 1000
     
     # Main game loop
     while generation < GENERATION:
@@ -60,20 +59,20 @@ if __name__ == "__main__":
                     foodfinder.draw()
                     food.draw()
                     obstacle.draw()
-                    foodfinder.checkCollision(obstacle)
                 except:
                     print(f"Exception foodfinder: {(foodfinder.red, foodfinder.green, foodfinder.blue)}")
                     print(f"Exception food : {(food.color)}")
 
                 if not foodfinder.completed and not foodfinder.crashed:
                     foodfinder.move()
+                    foodfinder.checkCollision(obstacle)
             '''
                 for every foodfinder, calculate fitness, which is their distance
                 from food at the last iteration, and find the max fitness to normalize it
             '''
             # find raw fitness as an inverse relation to distance from food
             for foodfinder in foodfinders:
-                minimumDistance = min(foodfinder.calculateFitness(food, initialDistance), minimumDistance)
+                foodfinder.calculateFitness(food)
 
             # find max fitness for this generation and compare with the all time bestFitness
             maxFitnessFoodfinder = max(foodfinders, key=(lambda foodfinder : foodfinder.fitness))

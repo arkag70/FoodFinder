@@ -35,21 +35,25 @@ class Foodfinder:
         self.xvel += self.xacc
         self.yvel += self.yacc
 
-    def calculateFitness(self, target, initialDistance):
+    def calculateFitness(self, target):
 
-        targetx, targety, targetLen = target.xpos, target.ypos, target.length
-        distance = sqrt((targetx - self.rect.x)**2 + (targety - self.rect.y)**2)
-        self.fitness = 1 if (distance < targetLen) else (1/distance)
-        
-        if self.fitness == 1:
-            self.completed = True
-            self.color = target.color
-        
-        return distance
+        if self.crashed == True:
+            self.fitness *= 0.1
+        else:
+            targetx, targety, targetLen = target.xpos, target.ypos, target.length
+            distance = sqrt((targetx - self.rect.x)**2 + (targety - self.rect.y)**2)
+            self.fitness = 1 if (distance < targetLen) else (1/distance)
+            
+            if self.fitness == 1:
+                self.completed = True
+                self.color = target.color
     
     def checkCollision(self, obstacle):
-        
+        #with obstacle
         if (self.rect.x  >= obstacle.xpos and self.rect.x <= obstacle.xpos + obstacle.width) and (self.rect.y  >= obstacle.ypos and self.rect.y <= obstacle.ypos + obstacle.height):
+            self.crashed = True
+        #with walls
+        if (self.rect.x  <= self.breadth or self.rect.x >= self.screen.get_width()-self.breadth or self.rect.y  <= self.length):
             self.crashed = True
 
     @staticmethod
